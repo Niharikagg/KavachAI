@@ -1,0 +1,194 @@
+[
+  {
+    "conversation_id": "conv_001",
+    "attributes": [
+      {
+        "type": "AGE",
+        "value": "adult",
+        "confidence": 0.96,
+        "specificity": 0.2,
+        "source_message_id": 1
+      },
+      {
+        "type": "LOCATION",
+        "value": "India",
+        "confidence": 0.98,
+        "specificity": 0.2,
+        "source_message_id": 1
+      }
+    ],
+    "contextual_indicators": []
+  },
+  {
+    "conversation_id": "conv_002",
+    "attributes": [
+      {
+        "type": "AGE",
+        "value": "23",
+        "confidence": 0.97,
+        "specificity": 1.0,
+        "source_message_id": 1
+      },
+      {
+        "type": "LOCATION",
+        "value": "Village X",
+        "confidence": 0.94,
+        "specificity": 1.0,
+        "source_message_id": 2
+      },
+      {
+        "type": "HEALTH",
+        "value": "diabetes",
+        "confidence": 0.99,
+        "specificity": 0.9,
+        "source_message_id": 3
+      }
+    ],
+    "contextual_indicators": [
+      {
+        "indicator": "exact_age",
+        "attribute_type": "AGE"
+      },
+      {
+        "indicator": "village_level_location",
+        "attribute_type": "LOCATION"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_003",
+    "attributes": [
+      {
+        "type": "AGE",
+        "value": "29",
+        "confidence": 0.95,
+        "specificity": 1.0,
+        "source_message_id": 1
+      },
+      {
+        "type": "LOCATION",
+        "value": "Bengaluru",
+        "confidence": 0.97,
+        "specificity": 0.7,
+        "source_message_id": 1
+      },
+      {
+        "type": "FINANCIAL",
+        "value": "₹50 lakh debt",
+        "confidence": 0.91,
+        "specificity": 0.9,
+        "source_message_id": 2
+      },
+      {
+        "type": "OCCUPATION",
+        "value": "software engineer",
+        "confidence": 0.96,
+        "specificity": 0.6,
+        "source_message_id": 3
+      }
+    ],
+    "contextual_indicators": [
+      {
+        "indicator": "exact_age",
+        "attribute_type": "AGE"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_004",
+    "attributes": [
+      {
+        "type": "AGE",
+        "value": "34",
+        "confidence": 0.96,
+        "specificity": 1.0,
+        "source_message_id": 1
+      },
+      {
+        "type": "LOCATION",
+        "value": "Village Y",
+        "confidence": 0.93,
+        "specificity": 1.0,
+        "source_message_id": 1
+      },
+      {
+        "type": "CRIME",
+        "value": "fraud",
+        "confidence": 0.94,
+        "specificity": 0.8,
+        "source_message_id": 2
+      },
+      {
+        "type": "LAW",
+        "value": "ongoing criminal investigation",
+        "confidence": 0.89,
+        "specificity": 0.9,
+        "source_message_id": 3
+      }
+    ],
+    "contextual_indicators": [
+      {
+        "indicator": "village_level_location",
+        "attribute_type": "LOCATION"
+      },
+      {
+        "indicator": "uniqueness_word",
+        "attribute_type": "CRIME"
+      }
+    ]
+  },
+  {
+    "conversation_id": "conv_005",
+    "attributes": [
+      {
+        "type": "AGE",
+        "value": "41",
+        "confidence": 0.97,
+        "specificity": 1.0,
+        "source_message_id": 1
+      },
+      {
+        "type": "LOCATION",
+        "value": "Small village in Karnataka",
+        "confidence": 0.92,
+        "specificity": 0.9,
+        "source_message_id": 1
+      },
+      {
+        "type": "HEALTH",
+        "value": "rare neurological disorder",
+        "confidence": 0.88,
+        "specificity": 1.0,
+        "source_message_id": 2
+      },
+      {
+        "type": "FINANCIAL",
+        "value": "high medical debt",
+        "confidence": 0.91,
+        "specificity": 0.8,
+        "source_message_id": 3
+      },
+      {
+        "type": "FAMILY",
+        "value": "single parent",
+        "confidence": 0.95,
+        "specificity": 0.7,
+        "source_message_id": 4
+      }
+    ],
+    "contextual_indicators": [
+      {
+        "indicator": "exact_age",
+        "attribute_type": "AGE"
+      },
+      {
+        "indicator": "village_level_location",
+        "attribute_type": "LOCATION"
+      },
+      {
+        "indicator": "uniqueness_word",
+        "attribute_type": "HEALTH"
+      }
+    ]
+  }
+]

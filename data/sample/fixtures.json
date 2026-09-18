@@ -1,0 +1,62 @@
+[
+  {
+    "conversation_id": "conv_001",
+    "messages": [
+      {
+        "id": 1,
+        "text": "I'm the only 23-year-old diabetic woman in Village X. I visited PHC Y yesterday."
+      }
+    ],
+    "attributes": [
+      { "type": "AGE", "value": "23", "confidence": 0.97, "specificity": 1.0 },
+      { "type": "GENDER", "value": "female", "confidence": 0.95, "specificity": 0.8 },
+      { "type": "LOCATION", "value": "Village X", "confidence": 0.94, "specificity": 1.0 },
+      { "type": "HEALTH", "value": "diabetes", "confidence": 0.99, "specificity": 0.9 },
+      { "type": "FACILITY", "value": "PHC Y", "confidence": 0.91, "specificity": 0.85 },
+      { "type": "DATE", "value": "yesterday", "confidence": 0.98, "specificity": 0.7 }
+    ],
+    "contextual_indicators": [
+      "village_level_location",
+      "exact_age",
+      "exact_date",
+      "sensitive_health_attribute",
+      "uniqueness_word"
+    ],
+    "uniqueness_terms": ["only"]
+  },
+  {
+    "conversation_id": "conv_002",
+    "messages": [
+      {
+        "id": 1,
+        "text": "I have diabetes and want to know about government health schemes."
+      }
+    ],
+    "attributes": [
+      { "type": "HEALTH", "value": "diabetes", "confidence": 0.99, "specificity": 0.4 }
+    ],
+    "contextual_indicators": [],
+    "uniqueness_terms": []
+  },
+  {
+    "conversation_id": "conv_003",
+    "messages": [
+      {
+        "id": 1,
+        "text": "I'm a 23-year-old diabetic woman from Village X."
+      }
+    ],
+    "attributes": [
+      { "type": "AGE", "value": "23", "confidence": 0.97, "specificity": 1.0 },
+      { "type": "GENDER", "value": "female", "confidence": 0.95, "specificity": 0.8 },
+      { "type": "LOCATION", "value": "Village X", "confidence": 0.94, "specificity": 1.0 },
+      { "type": "HEALTH", "value": "diabetes", "confidence": 0.99, "specificity": 0.9 }
+    ],
+    "contextual_indicators": [
+      "village_level_location",
+      "exact_age",
+      "sensitive_health_attribute"
+    ],
+    "uniqueness_terms": []
+  }
+]
