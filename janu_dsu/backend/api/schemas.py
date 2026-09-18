@@ -29,7 +29,7 @@ class AnalyzeRequest:
     original_text:         str
     attributes:            list[dict]   # list of AttributeIn-shaped dicts
     risk_score:            float
-    risk_level:            str          # LOW | MEDIUM | HIGH
+    risk_level:            Optional[str] = None  # LOW | MEDIUM | HIGH
     contextual_indicators: list[str]    = field(default_factory=list)
     threshold:             Optional[float] = None  # override default 0.40
 
@@ -79,3 +79,5 @@ class AnalyzeResponse:
     threshold_used:     float
     transformations:    list[dict]
     utility:            dict
+    risk_level:         Optional[str] = None
+    contextual_indicators: list[str] = field(default_factory=list)

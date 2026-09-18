@@ -131,8 +131,10 @@ def optimize(
           - conversation_id : str
           - original_text   : str
           - attributes      : list[dict]
-          - risk_score      : float
-          - risk_level      : str
+                    - risk_score      : float
+                Optional metadata is preserved in the result:
+                    - contextual_indicators : list[str]
+                    - risk_level             : str
     threshold : float
         Target maximum re-identification risk score (default 0.40).
     scorer_fn : callable | None
@@ -149,10 +151,12 @@ def optimize(
     """
     scorer = scorer_fn if scorer_fn is not None else _placeholder_scorer
 
-    conversation_id = conversation_input["conversation_id"]
-    original_text   = conversation_input["original_text"]
-    initial_risk    = float(conversation_input["risk_score"])
-    original_attrs  = conversation_input["attributes"]
+    conversation_id       = conversation_input["conversation_id"]
+    original_text         = conversation_input["original_text"]
+    initial_risk          = float(conversation_input["risk_score"])
+    original_attrs        = conversation_input["attributes"]
+    risk_level            = conversation_input.get("risk_level")
+    contextual_indicators = conversation_input.get("contextual_indicators", [])
 
     # Deep-copy attributes so we can mutate specificity without affecting input
     working_attrs = copy.deepcopy(original_attrs)
@@ -173,6 +177,8 @@ def optimize(
             transformations=[],
             original_attrs=original_attrs,
             threshold=threshold,
+            risk_level=risk_level,
+            contextual_indicators=contextual_indicators,
         )
 
     # -----------------------------------------------------------------------
@@ -233,6 +239,8 @@ def optimize(
         transformations=applied_transformations,
         original_attrs=original_attrs,
         threshold=threshold,
+        risk_level=risk_level,
+        contextual_indicators=contextual_indicators,
     )
 
 
@@ -272,19 +280,24 @@ def _risk_level_label(score: float) -> str:
 def _build_result(
     conversation_id, original_text, sanitized_text,
     initial_risk, final_risk, transformations,
-    original_attrs, threshold,
+    original_attrs, threshold, risk_level=None, contextual_indicators=None,
 ) -> dict:
     utility = utility_score(original_attrs, transformations)
-    return {
+    result = {
         "conversation_id":    conversation_id,
         "original_text":      original_text,
         "sanitized_text":     sanitized_text,
         "initial_risk_score": round(initial_risk, 4),
         "final_risk_score":   round(final_risk, 4),
-        "initial_risk_level": _risk_level_label(initial_risk),
+        "initial_risk_level": risk_level or _risk_level_label(initial_risk),
         "final_risk_level":   _risk_level_label(final_risk),
         "risk_reduced":       round(initial_risk - final_risk, 4),
         "threshold_used":     threshold,
         "transformations":    transformations,
         "utility":            utility,
     }
+    if risk_level is not None:
+        result["risk_level"] = risk_level
+    if contextual_indicators is not None:
+        result["contextual_indicators"] = contextual_indicators
+    return result

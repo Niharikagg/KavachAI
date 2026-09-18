@@ -281,6 +281,32 @@ class TestExternalScorer(unittest.TestCase):
         self.assertEqual(result["final_risk_score"], 0.0)
 
 
+class TestModule2Integration(unittest.TestCase):
+    def test_module2_output_flows_directly_and_preserves_metadata(self):
+        data = _load_mock("high")
+
+        result = optimize(data, scorer_fn=lambda attrs: 0.0)
+
+        self.assertEqual(result["conversation_id"], data["conversation_id"])
+        self.assertEqual(result["original_text"], data["original_text"])
+        self.assertEqual(result["initial_risk_score"], data["risk_score"])
+        self.assertEqual(result["initial_risk_level"], data["risk_level"])
+        self.assertEqual(
+            result["contextual_indicators"],
+            data["contextual_indicators"],
+        )
+        self.assertEqual(result["risk_level"], data["risk_level"])
+
+    def test_optional_module2_metadata_can_be_omitted(self):
+        data = _load_mock("low")
+        data.pop("risk_level")
+
+        result = optimize(data, scorer_fn=lambda attrs: 0.0)
+
+        self.assertEqual(result["initial_risk_level"], "LOW")
+        self.assertEqual(result["contextual_indicators"], [])
+
+
 # ===========================================================================
 # Run
 # ===========================================================================
