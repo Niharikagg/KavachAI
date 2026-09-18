@@ -1,0 +1,58 @@
+{
+  "conversation_id": "conv_high_003",
+  "original_text": "I am the only 23-year-old diabetic woman in Village X. I visited PHC Y yesterday.",
+  "attributes": [
+    {
+      "type": "AGE",
+      "value": "23",
+      "confidence": 0.97,
+      "specificity": 1.0
+    },
+    {
+      "type": "GENDER",
+      "value": "female",
+      "confidence": 0.95,
+      "specificity": 0.5
+    },
+    {
+      "type": "HEALTH",
+      "value": "diabetes",
+      "confidence": 0.99,
+      "specificity": 0.5
+    },
+    {
+      "type": "LOCATION",
+      "value": "Village X",
+      "confidence": 0.94,
+      "specificity": 1.0,
+      "granularity": "village"
+    },
+    {
+      "type": "FACILITY",
+      "value": "PHC Y",
+      "confidence": 0.91,
+      "specificity": 0.9
+    },
+    {
+      "type": "DATE",
+      "value": "yesterday",
+      "confidence": 0.98,
+      "specificity": 0.8
+    },
+    {
+      "type": "UNIQUENESS_WORD",
+      "value": "only",
+      "confidence": 0.99,
+      "specificity": 1.0
+    }
+  ],
+  "contextual_indicators": [
+    "village_level_location",
+    "exact_age",
+    "sensitive_health_attribute",
+    "uniqueness_indicator",
+    "recent_healthcare_visit"
+  ],
+  "risk_score": 0.91,
+  "risk_level": "HIGH"
+}

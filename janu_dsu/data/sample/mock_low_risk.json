@@ -1,0 +1,15 @@
+{
+  "conversation_id": "conv_low_001",
+  "original_text": "I have diabetes and want to know about government health schemes.",
+  "attributes": [
+    {
+      "type": "HEALTH",
+      "value": "diabetes",
+      "confidence": 0.99,
+      "specificity": 0.5
+    }
+  ],
+  "contextual_indicators": [],
+  "risk_score": 0.18,
+  "risk_level": "LOW"
+}

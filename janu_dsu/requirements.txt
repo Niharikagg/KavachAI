@@ -1,0 +1,9 @@
+# No external packages needed.
+# All dependencies are Python standard library only.
+#
+# If your teammates (Module 1 / Module 2) use:
+#   fastapi, uvicorn, pydantic  → pip install fastapi uvicorn pydantic
+#   spacy, transformers         → pip install spacy transformers
+#   scikit-learn, xgboost       → pip install scikit-learn xgboost
+#
+# Module 3 (this folder) requires nothing beyond Python 3.10+.
