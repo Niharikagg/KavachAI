@@ -1,0 +1,34 @@
+{
+  "conversation_id": "conv_med_002",
+  "original_text": "I am a 23-year-old diabetic woman from Village X. I need help with my treatment.",
+  "attributes": [
+    {
+      "type": "AGE",
+      "value": "23",
+      "confidence": 0.97,
+      "specificity": 1.0
+    },
+    {
+      "type": "GENDER",
+      "value": "female",
+      "confidence": 0.95,
+      "specificity": 0.5
+    },
+    {
+      "type": "HEALTH",
+      "value": "diabetes",
+      "confidence": 0.99,
+      "specificity": 0.5
+    },
+    {
+      "type": "LOCATION",
+      "value": "Village X",
+      "confidence": 0.94,
+      "specificity": 0.9,
+      "granularity": "village"
+    }
+  ],
+  "contextual_indicators": ["village_level_location", "exact_age"],
+  "risk_score": 0.62,
+  "risk_level": "MEDIUM"
+}
