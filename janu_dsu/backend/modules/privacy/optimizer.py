@@ -215,6 +215,13 @@ def optimize(
 
         # Patch the running sanitized text
         sanitized_text = _apply_text_patch(sanitized_text, original_value, new_value)
+        if attr_type == "AGE":
+            sanitized_text = re.sub(
+                rf"{re.escape(new_value)}\s+years?\s+old\b",
+                new_value,
+                sanitized_text,
+                flags=re.IGNORECASE,
+            )
 
         # Record transformation
         applied_transformations.append({

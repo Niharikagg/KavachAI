@@ -212,6 +212,29 @@ class TestOptimizerMediumRisk(unittest.TestCase):
     def test_some_utility_retained(self):
         self.assertGreater(self.result["utility"]["information_retained"], 0.4)
 
+    def test_age_generalization_removes_years_old_suffix(self):
+        data = {
+            "conversation_id": "conv_age_001",
+            "original_text": "I am 23 years old and live in Village X.",
+            "attributes": [
+                {
+                    "type": "AGE",
+                    "value": "23",
+                    "confidence": 0.97,
+                    "specificity": 1.0,
+                }
+            ],
+            "risk_score": 0.91,
+            "risk_level": "HIGH",
+        }
+
+        result = optimize(data, scorer_fn=lambda attrs: 0.8 if attrs[0]["specificity"] > 0.5 else 0.0)
+
+        self.assertEqual(
+            result["sanitized_text"],
+            "I am a young adult and live in Village X.",
+        )
+
 
 class TestOptimizerHighRisk(unittest.TestCase):
     def setUp(self):
