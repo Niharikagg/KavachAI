@@ -55,6 +55,19 @@ def test_detector_handles_additional_indian_identifiers():
     assert {"IFSC", "BANK_ACCOUNT", "VOTER_ID"}.issubset(types)
 
 
+def test_detector_handles_hindi_names_and_hyphenated_vehicle_numbers():
+    result = detect_entities(
+        "उसका नाम आरव शर्मा है। उसके पिता का नाम रमेश शर्मा और माता का नाम सुनीता शर्मा है। "
+        "उसकी छोटी बहन नेहा शर्मा है। वाहन KA-09-AB-4721 है।"
+    )
+    values = {entity["value"] for entity in result}
+    assert {"आरव शर्मा", "रमेश शर्मा", "सुनीता शर्मा", "नेहा शर्मा"}.issubset(values)
+    assert any(
+        entity["type"] == "VEHICLE_NUMBER" and entity["value"] == "KA-09-AB-4721"
+        for entity in result
+    )
+
+
 def test_english_contextual_attributes():
     result = pipeline.analyze_conversation(
         "english",

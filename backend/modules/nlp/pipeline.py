@@ -67,11 +67,11 @@ def analyze_conversation(conversation_id: str, messages: list[dict]) -> dict:
     language_contexts = get_processing_contexts([message["text"] for message in messages])
 
     # 1. Explicit PII detection (Presidio) — per message
-    for msg in messages:
+    for index, msg in enumerate(messages):
         msg_id = msg["id"]
         text = msg["text"]
 
-        pii_entities = detect_entities(text)
+        pii_entities = detect_entities(text, language_contexts[index])
         for entity in pii_entities:
             all_attributes.append({
                 "type": entity["type"],

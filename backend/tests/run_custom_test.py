@@ -1,17 +1,15 @@
 """
 run_custom_test.py
-------------------
+
 Terminal runner for the KavachAI privacy pipeline.
 
-Usage (from the project root):
-    python backend/tests/run_custom_test.py
-    python -m backend.tests.run_custom_test
+Usage:
 
-Edit ``backend/tests/test_input.json`` to test a different sentence —
-only the ``"content"`` field inside ``messages`` needs to change.
+    Usage:
 
-The runner calls the REAL production pipeline (process_conversation).
-No M1/M2/M3 logic is duplicated here.
+     .venv\Scripts\python.exe backend\tests\run_custom_test.py
+
+Edit the root input.json to test a different sentence.
 """
 
 from __future__ import annotations
@@ -21,23 +19,26 @@ import sys
 import traceback
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Ensure the project root is on sys.path so that package imports resolve when
-# this script is run directly (python backend/tests/run_custom_test.py).
-# ---------------------------------------------------------------------------
+
+# ============================================================
+# PROJECT PATH
+# ============================================================
+
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
+
 
 from backend.modules.pipeline import process_conversation  # noqa: E402
 
 
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
+# ============================================================
+# DISPLAY HELPERS
+# ============================================================
 
 _DIVIDER = "=" * 60
-_THIN    = "-" * 60
+_THIN = "-" * 60
 
 
 def _section(title: str) -> None:
@@ -46,115 +47,361 @@ def _section(title: str) -> None:
     print(_THIN)
 
 
+# ============================================================
+# M1
+# ============================================================
+
 def _print_m1(m1: dict) -> None:
-    _section("M1 — EXTRACTED ATTRIBUTES")
+
+    _section("M1 OUTPUT")
+
     attrs = m1.get("attributes", [])
+
     if not attrs:
         print("  (no attributes detected)")
     else:
+
         for i, attr in enumerate(attrs, 1):
-            print(f"\n  [{i}] TYPE        : {attr.get('type', '—')}")
-            print(f"       VALUE       : {attr.get('value', '—')}")
-            print(f"       CONFIDENCE  : {attr.get('confidence', '—')}")
-            print(f"       SPECIFICITY : {attr.get('specificity', '—')}")
 
-    indicators = m1.get("contextual_indicators", [])
-    print(f"\n  CONTEXTUAL INDICATORS ({len(indicators)}):")
-    if not indicators:
-        print("    (none)")
-    else:
-        for ind in indicators:
-            print(f"    • {ind.get('indicator', '—')}  [{ind.get('attribute_type', '—')}]")
-
-
-def _print_m2(m2: dict) -> None:
-    _section("M2 — RISK ANALYSIS")
-    print(f"\n  RISK SCORE  : {m2.get('risk_score', '—')}")
-    print(f"  RISK LEVEL  : {m2.get('risk_level', '—')}")
-    features = m2.get("features", {})
-    if features:
-        print("\n  FEATURES:")
-        for name, val in features.items():
-            print(f"    {name:<42} : {val}")
-
-
-def _print_m3(m3: dict) -> None:
-    _section("M3 — SANITIZED OUTPUT")
-    print(f"\n  ORIGINAL TEXT   : {m3.get('original_text', '—')}")
-    print(f"  SANITIZED TEXT  : {m3.get('sanitized_text', '—')}")
-
-    transformations = m3.get("transformations", [])
-    print(f"\n  TRANSFORMATIONS ({len(transformations)}):")
-    if not transformations:
-        print("    (none)")
-    else:
-        for t in transformations:
             print(
-                f"    • [{t.get('attribute', '?')}]"
-                f"  \"{t.get('original', '?')}\""
-                f"  →  \"{t.get('new_value', '?')}\""
-                f"  (cost {t.get('info_loss_cost', '?')})"
+                f"\n  [{i}] TYPE        : "
+                f"{attr.get('type', '—')}"
             )
 
-    utility = m3.get("utility", {})
-    print(f"\n  INITIAL RISK SCORE  : {m3.get('initial_risk_score', '—')}")
-    print(f"  FINAL RISK SCORE    : {m3.get('final_risk_score', '—')}")
-    print(f"  INITIAL RISK LEVEL  : {m3.get('initial_risk_level', '—')}")
-    print(f"  FINAL RISK LEVEL    : {m3.get('final_risk_level', '—')}")
-    print(f"  INFORMATION LOSS    : {utility.get('information_loss', '—')}")
-    print(f"  UTILITY RETAINED    : {utility.get('information_retained', '—')}")
-    attrs_changed = utility.get("attributes_changed", "—")
-    attrs_total   = utility.get("attributes_total", "—")
-    print(f"  ATTRIBUTES CHANGED  : {attrs_changed} / {attrs_total}")
+            print(
+                f"       VALUE       : "
+                f"{attr.get('value', '—')}"
+            )
+
+            print(
+                f"       CONFIDENCE  : "
+                f"{attr.get('confidence', '—')}"
+            )
+
+            print(
+                f"       SPECIFICITY : "
+                f"{attr.get('specificity', '—')}"
+            )
+
+    indicators = m1.get(
+        "contextual_indicators",
+        [],
+    )
+
+    print(
+        f"\n  CONTEXTUAL INDICATORS "
+        f"({len(indicators)}):"
+    )
+
+    if not indicators:
+
+        print("    (none)")
+
+    else:
+
+        for ind in indicators:
+
+            print(
+                f"    • "
+                f"{ind.get('indicator', '—')}"
+                f"  [{ind.get('attribute_type', '—')}]"
+            )
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
+# ============================================================
+# M2
+# ============================================================
+
+def _print_m2(m2: dict) -> None:
+
+    _section("M2 OUTPUT")
+
+    print(
+        f"\n  RISK SCORE  : "
+        f"{m2.get('risk_score', '—')}"
+    )
+
+    print(
+        f"  RISK LEVEL  : "
+        f"{m2.get('risk_level', '—')}"
+    )
+
+    features = m2.get(
+        "features",
+        {},
+    )
+
+    if features:
+
+        print("\n  FEATURES:")
+
+        for name, value in features.items():
+
+            print(
+                f"    {name:<42} : "
+                f"{value}"
+            )
+
+
+# ============================================================
+# M3
+# ============================================================
+
+def _print_m3(m3: dict) -> None:
+
+    _section("M3 OUTPUT")
+
+    print(
+        f"\n  ORIGINAL TEXT   : "
+        f"{m3.get('original_text', '—')}"
+    )
+
+    print(
+        f"  SANITIZED TEXT  : "
+        f"{m3.get('sanitized_text', '—')}"
+    )
+
+    transformations = m3.get(
+        "transformations",
+        [],
+    )
+
+    print(
+        f"\n  TRANSFORMATIONS "
+        f"APPLIED ({len(transformations)}):"
+    )
+
+    if not transformations:
+
+        print("    (none)")
+
+    else:
+
+        for t in transformations:
+
+            attribute = t.get(
+                "attribute",
+                "—",
+            )
+
+            original = t.get(
+                "original_value",
+                "—",
+            )
+
+            generalized = t.get(
+                "generalized_value",
+                "—",
+            )
+
+            cost = t.get(
+                "cost",
+                "—",
+            )
+
+            print(
+                f"    • [{attribute}]"
+                f"  \"{original}\""
+                f"  →  \"{generalized}\""
+                f"  (cost {cost})"
+            )
+
+    print(
+        f"\n  INITIAL RISK SCORE  : "
+        f"{m3.get('initial_risk_score', '—')}"
+    )
+
+    print(
+        f"  FINAL RISK SCORE    : "
+        f"{m3.get('final_risk_score', '—')}"
+    )
+
+    print(
+        f"  INITIAL RISK LEVEL  : "
+        f"{m3.get('initial_risk_level', '—')}"
+    )
+
+    print(
+        f"  FINAL RISK LEVEL    : "
+        f"{m3.get('final_risk_level', '—')}"
+    )
+
+    print(
+        f"  INFORMATION LOSS    : "
+        f"{m3.get('information_loss', '—')}"
+    )
+
+    print(
+        f"  UTILITY RETAINED    : "
+        f"{m3.get('information_retained', '—')}"
+    )
+
+    # --------------------------------------------------------
+    # IMPORTANT:
+    # "attributes_changed" in the optimizer currently means
+    # number of transformations, NOT unique attributes.
+    # --------------------------------------------------------
+
+    print(
+        f"  TRANSFORMATIONS     : "
+        f"{len(transformations)}"
+    )
+
+    print(
+        f"  ORIGINAL ATTRIBUTES : "
+        f"{m3.get('total_attributes', '—')}"
+    )
+
+
+# ============================================================
+# MAIN
+# ============================================================
 
 def main() -> int:
-    # Locate test_input.json relative to this script
-    input_file = Path(__file__).parent / "test_input.json"
+
+    input_file = (
+        _PROJECT_ROOT
+        / "input.json"
+    )
 
     if not input_file.exists():
-        print(f"ERROR: test input file not found at {input_file}", file=sys.stderr)
+
+        print(
+            f"ERROR: test input file not found "
+            f"at {input_file}",
+            file=sys.stderr,
+        )
+
         return 1
 
     try:
-        payload = json.loads(input_file.read_text(encoding="utf-8"))
+
+        payload = json.loads(
+            input_file.read_text(
+                encoding="utf-8"
+            )
+        )
+
     except json.JSONDecodeError as exc:
-        print(f"ERROR: failed to parse {input_file}: {exc}", file=sys.stderr)
+
+        print(
+            f"ERROR: failed to parse "
+            f"{input_file}: {exc}",
+            file=sys.stderr,
+        )
+
         return 1
 
-    conversation_id = payload.get("conversation_id", "custom_test_001")
-    messages        = payload.get("messages", [])
+    conversation_id = payload.get(
+        "conversation_id",
+        "custom_test_001",
+    )
 
-    if not messages:
-        print("ERROR: 'messages' list is empty in test_input.json", file=sys.stderr)
+    message = payload.get(
+        "message",
+        "",
+    )
+
+    if not message:
+
+        print(
+            "ERROR: 'message' is empty "
+            "in input.json",
+            file=sys.stderr,
+        )
+
         return 1
 
-    # Show the raw input
+    messages = [
+        {
+            "role": "user",
+            "content": message,
+        }
+    ]
+
+    # --------------------------------------------------------
+    # INPUT
+    # --------------------------------------------------------
+
     _section("CUSTOM INPUT")
-    raw_content = messages[0].get("content", "")
-    print(f"\n  {raw_content}")
 
-    # Run the REAL production pipeline
+    print(f"\n  {message}")
+
+    # --------------------------------------------------------
+    # PIPELINE
+    # --------------------------------------------------------
+
     try:
-        result = process_conversation(conversation_id, messages)
-    except Exception:  # noqa: BLE001
-        print("\nPIPELINE ERROR — traceback follows:\n", file=sys.stderr)
+
+        result = process_conversation(
+            conversation_id,
+            messages,
+        )
+
+    except Exception:
+
+        print(
+            "\nPIPELINE ERROR — traceback follows:\n",
+            file=sys.stderr,
+        )
+
         traceback.print_exc()
+
         return 1
 
-    _print_m1(result["m1"])
-    _print_m2(result["m2"])
-    _print_m3(result["m3"])
+    # --------------------------------------------------------
+    # OUTPUTS
+    # --------------------------------------------------------
+
+    _print_m1(
+        result["m1"]
+    )
+
+    _print_m2(
+        result["m2"]
+    )
+
+    _print_m3(
+        result["m3"]
+    )
+
+    # --------------------------------------------------------
+    # COMPLETE
+    # --------------------------------------------------------
 
     _section("PIPELINE COMPLETE")
-    print(f"\n  conversation_id : {result['conversation_id']}")
-    print(f"  risk reduced by : {result['m3'].get('risk_reduced', '—')}\n")
+
+    print(
+        f"\n  conversation_id : "
+        f"{result['conversation_id']}"
+    )
+
+    m3 = result.get(
+        "m3",
+        {},
+    )
+
+    risk_reduction = m3.get(
+        "risk_reduction",
+        "—",
+    )
+
+    print(
+        f"  risk reduced by : "
+        f"{risk_reduction}"
+    )
+
+    print()
+
     return 0
 
 
+# ============================================================
+# ENTRY POINT
+# ============================================================
+
 if __name__ == "__main__":
-    sys.exit(main())
+
+    sys.exit(
+        main()
+    )

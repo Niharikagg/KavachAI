@@ -45,6 +45,11 @@ _HINDI_ROMAN_MARKERS = {
     "bahut", "kaise", "kahan", "kyun", "kyu", "accha", "achha", "theek",
     "aapke", "aapka", "unka", "inhe", "unhe",
 }
+_KANNADA_ROMAN_MARKERS = {
+    "nanna", "naanu", "nanage", "vayassu", "varsha", "varshada", "hatra", "halli",
+    "halliyalli", "sanna", "aparoopada", "mahile", "aagi", "kelasa", "maaduttiddene",
+    "nalli", "padediddene", "ide", "mattu",
+}
 
 
 def _script_context(text: str) -> dict[str, Any]:
@@ -54,6 +59,8 @@ def _script_context(text: str) -> dict[str, Any]:
     tokens = set(re.findall(r"\b[a-zA-Z]+\b", text.lower()))
     if tokens & _HINDI_ROMAN_MARKERS:
         scripts.add("hi")
+    if tokens & _KANNADA_ROMAN_MARKERS:
+        scripts.add("kn")
 
     return {
         "observed_scripts": sorted(scripts),

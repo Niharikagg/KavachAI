@@ -6,28 +6,47 @@ import re
 from typing import Any
 
 # Settlement/location words that indicate a value is a PLACE, not an occupation.
-# Any GLiNER prediction labelled OCCUPATION whose value contains one of these
-# words is dropped in normalize_attributes() as a false positive.
 _OCCUPATION_LOCATION_BLOCKLIST = re.compile(
     r'\b(?:village|town|gram|tehsil|taluk|panchayat|gaon|mohalla)\b',
     re.IGNORECASE,
 )
 
+# Word tokens in Latin, Devanagari (without danda) and Kannada.
+_TOKEN_RE = re.compile(r"[\u0900-\u0963\u0970-\u097F\u0C80-\u0CFFA-Za-z]+")
 
 GARBAGE_TOKENS = {
-    # Hindi auxiliary verbs & copulas
+    # Hindi auxiliary verbs & copulas (Roman)
     "hai", "hain", "hoon", "hun", "ho", "tha", "thi", "the", "hoga", "hogi", "hoge",
-    # Hindi postpositions & prepositions
+    # Hindi postpositions & prepositions (Roman)
     "mein", "me", "ke", "ki", "ka", "ko", "se", "par", "pe", "tak",
-    # Hindi verbs / participles
+    # Hindi verbs / participles (Roman)
     "liye", "jaana", "jana", "gaya", "gayi", "gaye", "rehta", "rehti", "rehte",
     "karna", "karta", "karti", "karte", "karo", "kare", "raha", "rahi", "rahe",
-    # Hindi conjunctions & particles
+    # Hindi conjunctions & particles (Roman)
     "aur", "ya", "bhi", "toh", "to", "hi", "na",
-    # Hindi pronouns
+    # Hindi pronouns (Roman)
     "main", "mera", "meri", "mere", "mujhe", "mujhko", "hum", "tum", "aap", "yeh", "woh",
-    # Common English function words that appear in garbage fragments
-    "and", "or", "in", "on", "at", "to", "for", "with", "from", "of", "is", "am", "are", "was", "were", "the", "a", "an",
+    # Common English function words
+    "and", "or", "in", "on", "at", "to", "for", "with", "from", "of", "is", "am",
+    "are", "was", "were", "the", "a", "an",
+}
+
+# Devanagari / Kannada grammatical words. These are never a valid extracted value.
+INDIC_FUNCTION_WORDS = {
+    # Hindi
+    "के", "की", "का", "को", "में", "से", "पर", "और", "या", "है", "हैं", "था", "थी", "थे",
+    "एक", "यह", "वह", "वे", "इस", "उस", "अपने", "अपना", "अपनी", "उनके", "उनका", "उनकी",
+    "कई", "बहुत", "पास", "साथ", "रूप", "लिए", "तक", "भी", "ही", "नहीं", "जो", "कि",
+    "मेरे", "मेरा", "मेरी", "उन्हें", "उन्होंने", "ने", "तथा", "हर", "पिछले",
+    # Kannada
+    "ಮತ್ತು", "ಒಂದು", "ಈ", "ಆ", "ಅವರ", "ಇವರ", "ಜೊತೆ", "ಜೊತೆಗೆ", "ಬಳಿ", "ಯಲ್ಲಿ",
+}
+
+# Generic common nouns that must never be accepted as a person's name.
+# The main PERSON defense is the cue requirement in detector.py (नाम, honorifics),
+# not this list.
+NON_NAME_NOUNS = {
+    "वर्ष", "वर्षों", "साल", "लोग", "व्यक्ति", "परिवार", "बच्चों", "दोस्तों",
 }
 
 
@@ -37,10 +56,19 @@ def is_garbage_span(text: str) -> bool:
         return True
     if re.search(r"\d", text):
         return False
-    tokens = re.findall(r"\b[a-zA-Z]+\b", text.lower())
+    tokens = [t.casefold() for t in _TOKEN_RE.findall(text)]
     if not tokens:
-        return True
-    return all(token in GARBAGE_TOKENS for token in tokens)
+        return not re.search(r"[^\W_]", text, re.UNICODE)
+    return all(token in GARBAGE_TOKENS or token in INDIC_FUNCTION_WORDS for token in tokens)
+
+
+def is_plausible_person_name(value: str) -> bool:
+    """Safety net behind the cue-based PERSON patterns."""
+    tokens = _TOKEN_RE.findall(value)
+    if not 1 <= len(tokens) <= 4:
+        return False
+    blocked = GARBAGE_TOKENS | INDIC_FUNCTION_WORDS | NON_NAME_NOUNS
+    return not any(token.casefold() in blocked for token in tokens)
 
 
 def _attribute_key(attribute: dict[str, Any]) -> tuple[str, str, object]:
@@ -56,13 +84,11 @@ def normalize_attributes(attributes: list[dict[str, Any]]) -> list[dict[str, Any
         val = " ".join(str(attribute["value"]).split()).strip()
         if is_garbage_span(val):
             continue
-        # Drop location-like phrases misclassified as OCCUPATION by GLiNER.
-        # e.g. "village x", "town y" are places, not jobs.
         attr_type_raw = str(attribute["type"]).upper().strip()
         if attr_type_raw == "OCCUPATION" and _OCCUPATION_LOCATION_BLOCKLIST.search(val):
             continue
         normalized_attribute = {
-            "type": str(attribute["type"]).upper().strip(),
+            "type": attr_type_raw,
             "value": val,
             "confidence": round(float(attribute["confidence"]), 2),
             "specificity": round(float(attribute["specificity"]), 2),
